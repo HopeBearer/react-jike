@@ -36,7 +36,7 @@ const Login = () => {
               }
             ]}
           >
-            <Input size="large" placeholder="请输入手机号" autoComplete="off" />
+            <Input size="large" placeholder="请输入手机号" />
           </Form.Item>
           <Form.Item
             label="验证码"
@@ -48,7 +48,7 @@ const Login = () => {
               }
             ]}
           >
-            <Input size="large" autoComplete="off" placeholder="请输入验证码" />
+            <Input size="large" placeholder="请输入验证码" />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" size="large" block>
