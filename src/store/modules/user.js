@@ -1,4 +1,4 @@
-import { removeToken, request } from '@/utils'
+import { removeToken } from '@/utils'
 import { createSlice } from '@reduxjs/toolkit'
 import { setToken as _setToken, getToken } from '@/utils'
 import { getProfileAPI, loginAPI } from '@/apis/user'
