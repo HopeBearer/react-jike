@@ -15,24 +15,15 @@ import { Link } from 'react-router-dom'
 import './index.scss'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
-import { useEffect, useRef, useState } from 'react'
-import { addArticleAPI, getChannelsAPI } from '@/apis/article'
+import { useRef, useState } from 'react'
+import { addArticleAPI } from '@/apis/article'
+import { useChannel } from '@/hooks/useChannel'
 // import { info } from 'sass'
 const { Option } = Select
 
 const Publish = () => {
-  // 频道列表
-  const [channels, setChannels] = useState([])
-  // 调用接口
-  useEffect(() => {
-    const fetchChannels = async () => {
-      const { data } = await getChannelsAPI()
-      setChannels(data.channels)
-    }
+  const { channelList } = useChannel()
 
-    fetchChannels()
-  }, [])
- 
   const onAddArticle = async (formValue) => {
     if (imageType !== imageList.length)
       return message.warning('图片类型和数量不一致')
@@ -112,7 +103,7 @@ const Publish = () => {
             rules={[{ required: true, message: '请选择文章频道' }]}
           >
             <Select placeholder="请选择文章频道" style={{ width: 400 }}>
-              {channels.map((item) => (
+              {channelList.map((item) => (
                 <Option key={item.id} value={item.id}>
                   {item.name}
                 </Option>
