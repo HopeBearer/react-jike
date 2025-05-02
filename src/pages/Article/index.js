@@ -13,6 +13,12 @@ const { RangePicker } = DatePicker
 const Article = () => {
   // 获取频道
   const { channelList } = useChannel()
+
+  // 定义枚举
+  const status = {
+    1: <Tag color="warning">待审核</Tag>,
+    2: <Tag color="green">审核通过</Tag>
+  }
   // 准备列数据
   const columns = [
     {
@@ -33,7 +39,7 @@ const Article = () => {
     {
       title: '状态',
       dataIndex: 'status',
-      render: (data) => <Tag color="green">审核通过</Tag>
+      render: (data) => status[data]
     },
     {
       title: '发布时间',
@@ -68,33 +74,47 @@ const Article = () => {
       }
     }
   ]
-  // 准备表格body数据
-  const data = [
-    {
-      id: '8218',
-      comment_count: 0,
-      cover: {
-        images: []
-      },
-      like_count: 0,
-      pubdate: '2019-03-11 09:00:00',
-      read_count: 2,
-      status: 2,
-      title: 'wkwebview离线化加载h5资源解决方案'
-    }
-  ]
-  const [articleList, setArticleList] = useState([])
-  const [count, setCount] = useState(0)
+
+  const [reqData, setReqData] = useState({
+    status: '',
+    channel_id: '',
+    begin_pubdate: '',
+    end_pubdate: '',
+    page: 1,
+    per_page: 4
+  })
+  const [articleList, setArticleList] = useState({
+    list: [],
+    count: 0
+  })
+
   // 调用请求获取文章列表数据
   useEffect(() => {
-    const getArticleList = async () => {
-      const res = await getArticleListAPI()
-      console.log(res)
-      setCount(res.data.total_count)
-      setArticleList(res.data.results)
+    const getArticleList = async (reqData) => {
+      const {
+        data: { results, total_count }
+      } = await getArticleListAPI(reqData)
+      setArticleList({
+        list: results,
+        count: total_count
+      })
     }
-    getArticleList()
-  }, [])
+    getArticleList(reqData)
+  }, [reqData])
+
+  // 添加筛选功能
+
+  const onFilterList = (formValue) => {
+    console.log(formValue)
+    const { channel_id, date, status } = formValue
+    setReqData({
+      ...reqData,
+      channel_id: channel_id,
+      status: status,
+      begin_pubdate: date[0].format('YYYY-MM-DD'),
+      end_pubdate: date[1].format('YYYY-MM-DD')
+    })
+  }
 
   return (
     <div>
@@ -109,7 +129,7 @@ const Article = () => {
         }
         style={{ marginBottom: 20 }}
       >
-        <Form initialValues={{ status: '' }}>
+        <Form onFinish={onFilterList} initialValues={{ status: '' }}>
           <Form.Item label="状态" name="status">
             <Radio.Group>
               <Radio value={''}>全部</Radio>
@@ -144,8 +164,8 @@ const Article = () => {
           </Form.Item>
         </Form>
       </Card>
-      <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={articleList} />
+      <Card title={`根据筛选条件共查询到 ${articleList.count} 条结果：`}>
+        <Table rowKey="id" columns={columns} dataSource={articleList.list} />
       </Card>
     </div>
   )
